@@ -1,1 +1,152 @@
-</h1>hello</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Focus Board</title>
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --card-bg: #ffffff;
+      --border: #d9dce1;
+      --text: #1f2933;
+      --muted: #6b7280;
+      --accent: #2f6feb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 8px;
+    }
+
+    header h1 {
+      margin: 0 0 4px;
+      font-size: 26px;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 24px 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .group {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .group h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 8px;
+    }
+
+    .group label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .group textarea {
+      width: 100%;
+      min-height: 130px;
+      resize: vertical;
+      padding: 10px;
+      font: inherit;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fcfcfd;
+    }
+
+    .group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(47, 111, 235, 0.15);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Team Focus Board</h1>
+    <p>Each group's representative types their focus for the week. Entries save automatically in this browser.</p>
+  </header>
+
+  <main id="board"></main>
+
+  <script>
+    // The five group names, in order.
+    var groups = ["Group 1", "Group 2", "Group 3", "Group 4", "Group 5"];
+
+    var board = document.getElementById("board");
+
+    // Build one section on the page for each group.
+    groups.forEach(function (name) {
+      // A key used to store and look up this group's text in local storage.
+      var storageKey = "focus:" + name;
+
+      // Create the section container.
+      var section = document.createElement("section");
+      section.className = "group";
+
+      // The group's name as a heading.
+      var heading = document.createElement("h2");
+      heading.textContent = name;
+
+      // A short label above the text area.
+      var label = document.createElement("label");
+      label.textContent = "Focus for the week";
+      label.setAttribute("for", storageKey);
+
+      // The text area the representative types into.
+      var textarea = document.createElement("textarea");
+      textarea.id = storageKey;
+      textarea.placeholder = "Type " + name + "'s focus here...";
+
+      // If we saved something earlier, put it back in the text area.
+      var saved = localStorage.getItem(storageKey);
+      if (saved !== null) {
+        textarea.value = saved;
+      }
+
+      // Every time the text changes, save the current text to local storage.
+      textarea.addEventListener("input", function () {
+        localStorage.setItem(storageKey, textarea.value);
+      });
+
+      // Put the pieces together and add the section to the page.
+      section.appendChild(heading);
+      section.appendChild(label);
+      section.appendChild(textarea);
+      board.appendChild(section);
+    });
+  </script>
+</body>
+</html>
