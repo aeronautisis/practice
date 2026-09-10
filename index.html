@@ -1,152 +1,664 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en-SG">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Team Focus Board</title>
-  <style>
-    :root {
-      --bg: #f4f5f7;
-      --card-bg: #ffffff;
-      --border: #d9dce1;
-      --text: #1f2933;
-      --muted: #6b7280;
-      --accent: #2f6feb;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PHYLAX: protect the citizens</title>
+<meta name="description" content="PHYLAX warns people in Singapore of incoming drone attacks and guides each person to the nearest shelter they can reach in time.">
+<meta name="theme-color" content="#081421">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23081421'/%3E%3Cpath d='M6 24a10 10 0 0 1 20 0' fill='none' stroke='%23FF8A1F' stroke-width='3'/%3E%3Cpath d='M4 24h24' stroke='%23EEF3F7' stroke-width='2'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --night: #081421;
+    --raised: #0F2133;
+    --line: #223A52;
+    --text: #EEF3F7;
+    --text-2: #C8D4DF;
+    --muted: #A3B5C6;
+    --alert: #FF8A1F;
+    --safe: #5ED3A8;
+    --display: "Bahnschrift", "DIN Alternate", "DIN Condensed", "Roboto Condensed", "Arial Narrow", sans-serif;
+    --body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --gutter: clamp(1.25rem, 5vw, 4rem);
+  }
 
-    * {
-      box-sizing: border-box;
-    }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--night);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  img, svg { display: block; max-width: 100%; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--alert); outline-offset: 3px; border-radius: 4px; }
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.5;
-    }
+  .skip {
+    position: absolute; left: 1rem; top: -4rem; z-index: 50;
+    background: var(--alert); color: var(--night);
+    padding: .6rem 1rem; border-radius: 6px; font-weight: 600; text-decoration: none;
+  }
+  .skip:focus { top: 1rem; }
 
-    header {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 32px 24px 8px;
-    }
+  .wrap { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: var(--gutter); }
 
-    header h1 {
-      margin: 0 0 4px;
-      font-size: 26px;
-    }
+  .condensed {
+    font-family: var(--display);
+    font-stretch: condensed;
+    font-variation-settings: "wdth" 75;
+  }
 
-    header p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 15px;
-    }
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 3rem; padding: .75rem 1.4rem;
+    border: 2px solid transparent; border-radius: 999px;
+    font: 600 1rem/1 var(--body);
+    text-decoration: none; cursor: pointer;
+    transition: background-color .15s, color .15s, border-color .15s;
+  }
+  .btn-alert { background: var(--alert); color: var(--night); }
+  .btn-alert:hover { background: #FFA24D; }
+  .btn-ghost { background: transparent; color: var(--text); border-color: rgba(238, 243, 247, .5); }
+  .btn-ghost:hover { border-color: var(--text); }
+  .btn-night { background: var(--night); color: var(--text); }
+  .btn-night:hover { background: #142B42; }
+  .btn-sm { min-height: 2.5rem; padding: .5rem 1rem; font-size: .9rem; }
 
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px 24px 48px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
+  /* Header */
+  .site-header { position: absolute; inset: 0 0 auto 0; z-index: 10; }
+  .site-header .wrap { display: flex; align-items: center; justify-content: space-between; padding-block: 1.25rem; }
+  .brand {
+    display: flex; align-items: center; gap: .6rem;
+    font-family: var(--display); font-weight: 700; font-size: 1.35rem; letter-spacing: .08em;
+    text-decoration: none;
+  }
+  .nav { display: flex; align-items: center; gap: 1.75rem; }
+  .nav a:not(.btn) { color: var(--text-2); text-decoration: none; font-size: .95rem; }
+  .nav a:not(.btn):hover { color: var(--text); }
+  @media (max-width: 760px) { .nav a:not(.btn) { display: none; } }
 
-    .group {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-    }
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 100vh; min-height: 100svh;
+    display: flex; align-items: flex-end;
+    overflow: hidden;
+    background: radial-gradient(120% 80% at 50% 100%, #12304C 0%, var(--night) 60%);
+  }
+  .hero-photo {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: 50% 70%;
+    filter: saturate(.65) brightness(.62);
+  }
+  .hero-shade {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(8,20,33,.7) 0%, rgba(8,20,33,.15) 30%, rgba(8,20,33,.35) 55%, rgba(8,20,33,.92) 82%, var(--night) 100%),
+      linear-gradient(90deg, rgba(8,20,33,.75) 0%, rgba(8,20,33,0) 60%);
+  }
+  .hero-dome { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .dome-arc {
+    fill: none; stroke: var(--alert); stroke-width: 2;
+    stroke-dasharray: 1; stroke-dashoffset: 1;
+    animation: draw 2.2s cubic-bezier(.6, 0, .2, 1) .3s forwards;
+  }
+  .dome-ticks {
+    fill: none; stroke: var(--alert); stroke-width: 14;
+    stroke-dasharray: 1.5 22; opacity: 0;
+    animation: ticks 1.2s ease 2s forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes ticks { to { opacity: .45; } }
 
-    .group h2 {
-      margin: 0 0 10px;
-      font-size: 18px;
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 8px;
-    }
+  .hero-inner { position: relative; z-index: 2; padding-block: 8rem clamp(3rem, 9vh, 6rem); }
+  .hero h1 {
+    font-weight: 700;
+    font-size: clamp(3.5rem, 11vw, 9.5rem);
+    line-height: .88;
+    letter-spacing: -.01em;
+    margin: 0 0 1.5rem;
+    max-width: 11ch;
+  }
+  .lede {
+    font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+    line-height: 1.5;
+    color: var(--text-2);
+    max-width: 40ch;
+    margin: 0 0 2rem;
+  }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+  .hero-meta { margin: 3rem 0 0; font-size: .9rem; color: var(--muted); }
 
-    .group label {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
+  /* Sections */
+  .section { padding-block: clamp(4.5rem, 10vw, 8rem); }
+  .section-raised { background: var(--raised); }
+  .h2 {
+    font-weight: 600;
+    font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+    line-height: .98;
+    margin: 0;
+  }
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+  }
+  @media (max-width: 860px) { .split { grid-template-columns: 1fr; } }
 
-    .group textarea {
-      width: 100%;
-      min-height: 130px;
-      resize: vertical;
-      padding: 10px;
-      font: inherit;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: #fcfcfd;
-    }
+  /* Mission */
+  .statement {
+    font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+    line-height: 1.25;
+    font-weight: 500;
+    color: var(--text);
+    max-width: 32ch;
+    margin: 0 0 2rem;
+  }
+  .prose p { max-width: 62ch; color: var(--text-2); margin: 0 0 1.25rem; }
+  .prose .etym {
+    margin-top: 2.25rem; padding-left: 1rem;
+    border-left: 3px solid var(--alert);
+    font-size: .95rem; color: var(--muted);
+  }
 
-    .group textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(47, 111, 235, 0.15);
+  /* Why */
+  .why-list {
+    list-style: none; margin: 3rem 0 0; padding: 0;
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.5rem, 3vw, 3rem);
+  }
+  .why-list li { border-top: 2px solid var(--line); padding-top: 1.25rem; }
+  .why-list h3 { font-size: 1.25rem; line-height: 1.3; font-weight: 600; margin: 0 0 .75rem; }
+  .why-list p { margin: 0; color: var(--text-2); }
+  @media (max-width: 860px) { .why-list { grid-template-columns: 1fr; } }
+
+  /* How it works */
+  .steps {
+    list-style: none; counter-reset: step; margin: 3rem 0 0; padding: 0;
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .steps li { counter-increment: step; position: relative; padding-right: 1.75rem; }
+  .steps li::before {
+    content: counter(step);
+    display: block; margin-bottom: 1rem;
+    font-family: var(--display); font-stretch: condensed; font-variation-settings: "wdth" 75; font-weight: 700; font-size: 3.5rem; line-height: 1;
+    color: var(--alert);
+  }
+  .steps li::after {
+    content: ""; position: absolute; top: 1.75rem; left: 2.75rem; right: 1.25rem;
+    height: 2px; background: var(--line);
+  }
+  .steps li:last-child::after { display: none; }
+  .steps h3 { font-size: 1.25rem; line-height: 1.3; font-weight: 600; margin: 0 0 .25rem; }
+  .steps .owner { margin: 0 0 .75rem; font-size: .875rem; color: var(--muted); }
+  .steps p { margin: 0; color: var(--text-2); }
+  @media (max-width: 860px) {
+    .steps { grid-template-columns: 1fr; gap: 2.25rem; }
+    .steps li { padding: 0 0 0 4rem; }
+    .steps li::before { position: absolute; left: 0; top: 0; font-size: 2.75rem; }
+    .steps li::after { display: none; }
+  }
+
+  /* Aero Dome */
+  .dome-grid {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: clamp(2rem, 6vw, 5rem); align-items: center;
+  }
+  @media (max-width: 860px) { .dome-grid { grid-template-columns: 1fr; } }
+  .dome-intro { margin: 1.25rem 0 0; color: var(--text-2); max-width: 48ch; }
+  .legend { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; gap: 1rem; }
+  .legend li { display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; align-items: center; color: var(--text-2); }
+  .legend strong { color: var(--text); font-weight: 600; }
+  .swatch { display: block; height: 0; border-top: 2px solid; }
+  .swatch-sensors { border-top-style: dashed; border-color: #6F8BA6; }
+  .swatch-c2 { border-color: var(--muted); }
+  .swatch-interceptors { border-color: var(--text); border-top-width: 3px; }
+  .swatch-phylax { border-color: var(--alert); border-top-width: 10px; }
+
+  /* Demo band */
+  .demo { background: var(--alert); color: var(--night); padding-block: clamp(3.5rem, 7vw, 5.5rem); }
+  .demo .wrap { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 2rem; }
+  .demo p { margin: .9rem 0 0; max-width: 52ch; }
+  .demo :focus-visible { outline-color: var(--night); }
+
+  /* Footer */
+  .site-footer { padding-block: 3rem; font-size: .9rem; color: var(--muted); }
+  .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 3rem; }
+  .footer-grid p { margin: 0 0 .5rem; max-width: 56ch; }
+  .footer-grid strong { color: var(--text); font-weight: 600; }
+  @media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr; } }
+
+  /* Alert simulation dialog */
+  dialog {
+    border: 0; padding: 0; background: transparent; color: var(--text);
+    width: calc(100% - 2rem); max-width: 400px;
+  }
+  dialog::backdrop { background: rgba(3, 9, 16, .82); }
+  dialog[open] .phone { animation: rise .25s ease-out; }
+  @keyframes rise { from { transform: translateY(12px); opacity: 0; } }
+
+  .phone {
+    background: var(--raised);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    padding: 1rem;
+    display: grid; gap: .875rem;
+    max-height: calc(100vh - 2rem); max-height: calc(100svh - 2rem);
+    overflow: auto;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .55);
+  }
+  .sim {
+    margin: 0; padding: .4rem .75rem;
+    border: 1px dashed var(--line); border-radius: 12px;
+    font-size: .8rem; text-align: center; color: var(--muted);
+  }
+  .alert-card {
+    display: grid; grid-template-columns: auto 1fr; gap: .85rem; align-items: start;
+    background: var(--alert); color: var(--night);
+    border-radius: 18px; padding: 1rem 1.1rem;
+  }
+  .alert-card h2 { font-size: 1.6rem; line-height: 1; margin: 0 0 .35rem; }
+  .alert-card p { margin: 0; font-size: .95rem; line-height: 1.4; }
+  .alert-card .issued { margin-top: .4rem; font-size: .8rem; opacity: .8; }
+  .countdown { display: flex; justify-content: space-between; align-items: baseline; padding-inline: .25rem; }
+  .countdown span { font-size: .9rem; color: var(--muted); }
+  .countdown strong { font-size: 2.5rem; line-height: 1; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .map { border-radius: 16px; overflow: hidden; }
+
+  .map-svg .block { fill: #15304A; }
+  .map-svg .cover-block { fill: #15304A; transition: fill .3s, stroke .3s; }
+  .map-svg .route { fill: none; stroke: var(--alert); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 6 6; animation: march 1s linear infinite; transition: opacity .3s; }
+  .map-svg .shelter { transition: opacity .3s; }
+  .map-svg .you-pulse { fill: none; stroke: var(--alert); stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: pulse 1.6s ease-out infinite; }
+  .map-svg.is-cover .route, .map-svg.is-cover .shelter { opacity: .18; }
+  .map-svg.is-cover .cover-block { fill: rgba(255, 138, 31, .35); stroke: var(--alert); stroke-width: 2; }
+  .map-svg.is-safe .route { opacity: 0; }
+  @keyframes march { to { stroke-dashoffset: -12; } }
+  @keyframes pulse { from { transform: scale(1); opacity: .8; } to { transform: scale(3.2); opacity: 0; } }
+
+  .guidance { padding-inline: .25rem; }
+  .guidance h3 { font-size: 1.6rem; line-height: 1.05; margin: 0 0 .4rem; }
+  .guidance p { margin: 0; color: var(--text-2); font-size: .97rem; line-height: 1.45; }
+  .guidance .reason { margin-top: .6rem; font-size: .85rem; color: var(--muted); }
+  .guidance.is-cover h3 { color: var(--alert); }
+  .guidance.is-safe h3 { color: var(--safe); }
+
+  .warning-time { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .warning-time legend { padding: 0; margin-bottom: .45rem; font-size: .85rem; color: var(--muted); }
+  .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; }
+  .seg button {
+    min-height: 2.5rem; border-radius: 10px;
+    border: 1px solid var(--line); background: transparent; color: var(--text);
+    font: 600 .9rem var(--body); cursor: pointer;
+  }
+  .seg button[aria-pressed="true"] { background: var(--text); color: var(--night); border-color: var(--text); }
+  .dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+  .btn-safe { background: var(--safe); color: var(--night); }
+  .btn-safe:hover { background: #7FE0BC; }
+  .btn-safe:disabled { opacity: .55; cursor: default; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-delay: 0s !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
     }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h1>Team Focus Board</h1>
-    <p>Each group's representative types their focus for the week. Entries save automatically in this browser.</p>
-  </header>
 
-  <main id="board"></main>
+<a class="skip" href="#mission">Skip to content</a>
 
-  <script>
-    // The five group names, in order.
-    var groups = ["Group 1", "Group 2", "Group 3", "Group 4", "Group 5"];
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="PHYLAX home">
+      <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M6 24a10 10 0 0 1 20 0" fill="none" stroke="#FF8A1F" stroke-width="3"/>
+        <path d="M3 24h26" stroke="#EEF3F7" stroke-width="2"/>
+      </svg>
+      PHYLAX
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#mission">Mission</a>
+      <a href="#how">How it works</a>
+      <a href="#dome">Aero Dome</a>
+      <button class="btn btn-alert btn-sm" type="button" data-open-alert>Try the alert</button>
+    </nav>
+  </div>
+</header>
 
-    var board = document.getElementById("board");
+<main id="top">
 
-    // Build one section on the page for each group.
-    groups.forEach(function (name) {
-      // A key used to store and look up this group's text in local storage.
-      var storageKey = "focus:" + name;
+  <section class="hero" aria-labelledby="hero-title">
+    <img class="hero-photo"
+         src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Singapore_Skyline_at_Night_with_Black_Sky.JPG/2560px-Singapore_Skyline_at_Night_with_Black_Sky.JPG"
+         srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Singapore_Skyline_at_Night_with_Black_Sky.JPG/1280px-Singapore_Skyline_at_Night_with_Black_Sky.JPG 1280w,
+                 https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Singapore_Skyline_at_Night_with_Black_Sky.JPG/2560px-Singapore_Skyline_at_Night_with_Black_Sky.JPG 2560w"
+         sizes="100vw"
+         data-fallback="https://upload.wikimedia.org/wikipedia/commons/e/e6/Singapore_Skyline_at_Night_with_Black_Sky.JPG"
+         onerror="if(this.dataset.fallback){this.removeAttribute('srcset');this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.remove();}"
+         alt="">
+    <div class="hero-shade"></div>
 
-      // Create the section container.
-      var section = document.createElement("section");
-      section.className = "group";
+    <svg class="hero-dome" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <path class="dome-ticks" d="M150 900 A570 640 0 0 1 1290 900"/>
+      <path class="dome-arc" pathLength="1" d="M90 900 A630 700 0 0 1 1350 900"/>
+    </svg>
 
-      // The group's name as a heading.
-      var heading = document.createElement("h2");
-      heading.textContent = name;
+    <div class="wrap hero-inner">
+      <h1 id="hero-title" class="condensed">Protect the citizens</h1>
+      <p class="lede">PHYLAX warns people in Singapore when hostile drones are inbound, then guides each person to the nearest shelter they can reach in time.</p>
+      <div class="hero-actions">
+        <button class="btn btn-alert" type="button" data-open-alert>Try the alert</button>
+        <a class="btn btn-ghost" href="#mission">Read our mission</a>
+      </div>
+      <p class="hero-meta">Team PHYLAX, Singapore Defence Tech Hackathon 2026</p>
+    </div>
+  </section>
 
-      // A short label above the text area.
-      var label = document.createElement("label");
-      label.textContent = "Focus for the week";
-      label.setAttribute("for", storageKey);
+  <section id="mission" class="section" aria-labelledby="mission-title">
+    <div class="wrap split">
+      <h2 id="mission-title" class="h2 condensed">Our mission</h2>
+      <div class="prose">
+        <p class="statement">To turn every drone detection over Singapore into a clear, personal instruction that gets people to safety in time.</p>
+        <p>The Aero Dome concept layers sensors, command and control, and interceptors over Singapore's skies. PHYLAX is its civil layer: the part that faces the public. When the dome detects hostile drones, PHYLAX converts that detection into a warning on the phones of people in the threatened area, telling them what is happening, where to go and how much time they have.</p>
+        <p>Each person is directed to the nearest shelter they can actually reach, measured by walking time from where they stand rather than distance on a map. If the threat will arrive before they can get there, PHYLAX tells them to take cover where they are. Once safe, people mark themselves as sheltered, giving civil defence responders a live picture of who may still need help.</p>
+        <p>Interceptors protect the sky, but people on the ground still have to act. Minutes of warning only save lives when everyone knows what to do with them. PHYLAX closes the gap between detection and action.</p>
+        <p class="etym">Phylax (φύλαξ) is the Ancient Greek word for a guardian or watchman.</p>
+      </div>
+    </div>
+  </section>
 
-      // The text area the representative types into.
-      var textarea = document.createElement("textarea");
-      textarea.id = storageKey;
-      textarea.placeholder = "Type " + name + "'s focus here...";
+  <section id="why" class="section section-raised" aria-labelledby="why-title">
+    <div class="wrap">
+      <h2 id="why-title" class="h2 condensed">Why it matters</h2>
+      <ul class="why-list">
+        <li>
+          <h3>Drone attacks leave little warning</h3>
+          <p>Low-cost drones can be launched in numbers, fly low and arrive within minutes. No air defence can promise to stop every one, so the public must be ready to act on the warning they get.</p>
+        </li>
+        <li>
+          <h3>A siren tells you something is wrong, not where to go</h3>
+          <p>Singapore has built protection into homes, schools and MRT stations, and its public warning sirens cover the island. What people lack in the moment is a personal answer: which shelter, how far, and whether there is time.</p>
+        </li>
+        <li>
+          <h3>Density raises the stakes</h3>
+          <p>About six million people live and work in one of the most densely populated countries in the world. Commuters, students, visitors and workers are often far from home when a warning comes, so alerts must be instant, specific and available in all four official languages.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
 
-      // If we saved something earlier, put it back in the text area.
-      var saved = localStorage.getItem(storageKey);
-      if (saved !== null) {
-        textarea.value = saved;
-      }
+  <section id="how" class="section" aria-labelledby="how-title">
+    <div class="wrap">
+      <h2 id="how-title" class="h2 condensed">How it works</h2>
+      <ol class="steps">
+        <li>
+          <h3>Detect</h3>
+          <p class="owner">From the Aero Dome</p>
+          <p>Air defence sensors identify hostile drones and predict the area under threat.</p>
+        </li>
+        <li>
+          <h3>Warn</h3>
+          <p class="owner">PHYLAX</p>
+          <p>Everyone inside the threatened area receives an alert with a countdown, in their chosen official language.</p>
+        </li>
+        <li>
+          <h3>Guide</h3>
+          <p class="owner">PHYLAX</p>
+          <p>PHYLAX compares walking time with time to threat, then routes each person to a reachable shelter or tells them to take cover where they are.</p>
+        </li>
+        <li>
+          <h3>Account</h3>
+          <p class="owner">PHYLAX</p>
+          <p>People mark themselves safe. Responders see shelter loads and the areas where people are still unaccounted for.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
 
-      // Every time the text changes, save the current text to local storage.
-      textarea.addEventListener("input", function () {
-        localStorage.setItem(storageKey, textarea.value);
-      });
+  <section id="dome" class="section section-raised" aria-labelledby="dome-title">
+    <div class="wrap dome-grid">
+      <div>
+        <h2 id="dome-title" class="h2 condensed">Part of the Aero Dome</h2>
+        <p class="dome-intro">An air defence umbrella is built to stop threats in the sky. PHYLAX looks after the people underneath it.</p>
+        <ul class="legend">
+          <li><span class="swatch swatch-sensors" aria-hidden="true"></span><span><strong>Sensors</strong> find and track the threat</span></li>
+          <li><span class="swatch swatch-c2" aria-hidden="true"></span><span><strong>Command and control</strong> decides the response</span></li>
+          <li><span class="swatch swatch-interceptors" aria-hidden="true"></span><span><strong>Interceptors</strong> defeat it in the air</span></li>
+          <li><span class="swatch swatch-phylax" aria-hidden="true"></span><span><strong>PHYLAX</strong> gets people on the ground to safety</span></li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 600 340" role="img" aria-labelledby="dome-svg-title">
+        <title id="dome-svg-title">Nested layers of the Aero Dome over the city, with PHYLAX as the ground layer protecting citizens</title>
+        <path d="M40 300 A260 250 0 0 1 560 300" fill="none" stroke="#6F8BA6" stroke-width="2" stroke-dasharray="6 8"/>
+        <path d="M95 300 A205 195 0 0 1 505 300" fill="none" stroke="#A3B5C6" stroke-width="2"/>
+        <path d="M150 300 A150 140 0 0 1 450 300" fill="none" stroke="#EEF3F7" stroke-width="3"/>
+        <g fill="#223A52">
+          <rect x="176" y="248" width="26" height="52"/>
+          <rect x="208" y="222" width="18" height="78"/>
+          <rect x="232" y="258" width="30" height="42"/>
+          <rect x="316" y="196" width="22" height="104"/>
+          <rect x="344" y="236" width="28" height="64"/>
+          <rect x="378" y="252" width="22" height="48"/>
+        </g>
+        <g fill="#EEF3F7">
+          <circle cx="280" cy="284" r="3.5"/><rect x="278" y="289" width="4" height="11"/>
+          <circle cx="294" cy="286" r="3"/><rect x="292.5" y="290" width="3" height="10"/>
+          <circle cx="412" cy="284" r="3.5"/><rect x="410" y="289" width="4" height="11"/>
+          <circle cx="160" cy="284" r="3.5"/><rect x="158" y="289" width="4" height="11"/>
+        </g>
+        <rect x="20" y="300" width="560" height="12" fill="#FF8A1F"/>
+        <g fill="none" stroke="#FF8A1F" stroke-width="2" stroke-linejoin="round">
+          <path d="M548 38 l-14 6 l6 -14 z"/>
+          <path d="M580 76 l-14 6 l6 -14 z"/>
+          <path d="M522 18 l-14 6 l6 -14 z"/>
+        </g>
+      </svg>
+    </div>
+  </section>
 
-      // Put the pieces together and add the section to the page.
-      section.appendChild(heading);
-      section.appendChild(label);
-      section.appendChild(textarea);
-      board.appendChild(section);
+  <section class="demo" aria-labelledby="demo-title">
+    <div class="wrap">
+      <div>
+        <h2 id="demo-title" class="h2 condensed">See what a citizen would see</h2>
+        <p>Open a simulated alert and change the warning time to watch PHYLAX choose between moving to a shelter and taking cover on the spot.</p>
+      </div>
+      <button class="btn btn-night" type="button" data-open-alert>Try the alert</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <p><strong>Team PHYLAX</strong></p>
+      <p>Built for the Singapore Defence Tech Hackathon, 25 to 27 September 2026. This is a hackathon concept and does not represent the views of any government agency.</p>
+    </div>
+    <div>
+      <p>Banner photo: <a href="https://commons.wikimedia.org/wiki/File:Singapore_Skyline_at_Night_with_Black_Sky.JPG">Singapore Skyline at Night with Black Sky</a> by Merlion444, via Wikimedia Commons, released into the public domain.</p>
+    </div>
+  </div>
+</footer>
+
+<dialog id="alert" aria-labelledby="alert-title">
+  <div class="phone">
+    <p class="sim">Simulation. Not a real alert. Locations are illustrative.</p>
+
+    <div class="alert-card">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+        <path d="M17 3 L32 30 H2 Z" fill="none" stroke="#081421" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M17 13 v8" stroke="#081421" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="17" cy="25.5" r="1.8" fill="#081421"/>
+      </svg>
+      <div>
+        <h2 id="alert-title" class="condensed">Air threat alert</h2>
+        <p>Hostile drones detected heading towards your area.</p>
+        <p class="issued" id="issued"></p>
+      </div>
+    </div>
+
+    <div class="countdown">
+      <span id="cd-label">Time to threat</span>
+      <strong id="cd" class="condensed" role="timer">06:00</strong>
+    </div>
+
+    <div class="map">
+      <svg id="map" class="map-svg is-shelter" viewBox="0 0 320 180" role="img" aria-label="Map of your position, the nearest shelter and the walking route between them">
+        <rect width="320" height="180" fill="#0B1B2B"/>
+        <rect class="block" x="8" y="8" width="56" height="56"/>
+        <rect class="block" x="76" y="8" width="68" height="56"/>
+        <rect class="block" x="156" y="8" width="68" height="56"/>
+        <rect class="block" x="236" y="8" width="76" height="56"/>
+        <rect class="block" x="8" y="76" width="56" height="48"/>
+        <rect class="block" x="76" y="76" width="68" height="48"/>
+        <rect class="block" x="156" y="76" width="68" height="48"/>
+        <rect class="block" x="236" y="76" width="76" height="48"/>
+        <rect class="cover-block" x="8" y="136" width="56" height="36"/>
+        <rect class="block" x="76" y="136" width="68" height="36"/>
+        <rect class="block" x="156" y="136" width="68" height="36"/>
+        <rect class="block" x="236" y="136" width="76" height="36"/>
+        <path class="route" d="M70 130 V70 H230 V36 H260"/>
+        <g class="shelter" transform="translate(274 36)">
+          <rect x="-13" y="-13" width="26" height="26" rx="5" fill="#EEF3F7"/>
+          <path d="M-8 6 A8 8 0 0 1 8 6" fill="none" stroke="#081421" stroke-width="2.5"/>
+          <path d="M-10 6 H10" stroke="#081421" stroke-width="2"/>
+        </g>
+        <circle class="you-pulse" cx="70" cy="130" r="6"/>
+        <circle cx="70" cy="130" r="6" fill="#FF8A1F" stroke="#EEF3F7" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <div id="guidance" class="guidance is-shelter" aria-live="polite">
+      <h3 id="g-title" class="condensed">Go to shelter now</h3>
+      <p id="g-body">Public shelter at Block 190, 350 m away. About 5 minutes on foot. Follow the route on the map.</p>
+      <p id="g-reason" class="reason"></p>
+    </div>
+
+    <fieldset class="warning-time">
+      <legend>Warning time for this simulation</legend>
+      <div class="seg">
+        <button type="button" data-seconds="120" aria-pressed="false">2 min</button>
+        <button type="button" data-seconds="360" aria-pressed="true">6 min</button>
+        <button type="button" data-seconds="600" aria-pressed="false">10 min</button>
+      </div>
+    </fieldset>
+
+    <div class="dialog-actions">
+      <button id="btn-safe" class="btn btn-safe" type="button">I'm safe</button>
+      <button id="btn-close" class="btn btn-ghost" type="button">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('alert');
+  var cd = document.getElementById('cd');
+  var cdLabel = document.getElementById('cd-label');
+  var map = document.getElementById('map');
+  var guidance = document.getElementById('guidance');
+  var gTitle = document.getElementById('g-title');
+  var gBody = document.getElementById('g-body');
+  var gReason = document.getElementById('g-reason');
+  var issued = document.getElementById('issued');
+  var safeBtn = document.getElementById('btn-safe');
+  var segButtons = document.querySelectorAll('.seg button');
+
+  var WALK = 300;    // seconds to walk to the nearest shelter
+  var MARGIN = 30;   // safety margin in seconds
+  var warning = 360; // selected warning time in seconds
+  var remaining = 0;
+  var timer = null;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function clock(s) { return pad(Math.floor(s / 60)) + ':' + pad(s % 60); }
+  function words(s) {
+    var m = Math.floor(s / 60), r = s % 60;
+    return r ? m + ' min ' + r + ' s' : m + ' min';
+  }
+
+  function setState(state) {
+    guidance.className = 'guidance is-' + state;
+    map.setAttribute('class', 'map-svg is-' + state);
+  }
+
+  function decide() {
+    if (warning >= WALK + MARGIN) {
+      setState('shelter');
+      gTitle.textContent = 'Go to shelter now';
+      gBody.textContent = 'Public shelter at Block 190, 350 m away. About 5 minutes on foot. Follow the route on the map.';
+      gReason.textContent = 'Why this instruction: a ' + words(WALK) + ' walk plus a ' + MARGIN + ' s safety margin fits within your ' + words(warning) + ' warning.';
+    } else {
+      setState('cover');
+      gTitle.textContent = 'Take cover where you are';
+      gBody.textContent = 'There is not enough time to reach a shelter. Get inside the nearest building now and move to an inner room or stairwell, away from windows.';
+      gReason.textContent = 'Why this instruction: a ' + words(WALK) + ' walk plus a ' + MARGIN + ' s safety margin is longer than your ' + words(warning) + ' warning.';
+    }
+    safeBtn.disabled = false;
+    safeBtn.textContent = "I'm safe";
+  }
+
+  function tick() {
+    remaining = Math.max(0, remaining - 1);
+    cd.textContent = clock(remaining);
+    if (remaining === 0) {
+      clearInterval(timer);
+      cdLabel.textContent = 'Threat window reached';
+    }
+  }
+
+  function start() {
+    clearInterval(timer);
+    remaining = warning;
+    cd.textContent = clock(remaining);
+    cdLabel.textContent = 'Time to threat';
+    issued.textContent = 'Issued ' + new Date().toLocaleTimeString('en-SG', { hour: '2-digit', minute: '2-digit', hour12: false });
+    decide();
+    timer = setInterval(tick, 1000);
+  }
+
+  document.querySelectorAll('[data-open-alert]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (typeof dlg.showModal === 'function') { dlg.showModal(); } else { dlg.setAttribute('open', ''); }
+      start();
     });
-  </script>
+  });
+
+  segButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      segButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      warning = Number(btn.dataset.seconds);
+      start();
+    });
+  });
+
+  safeBtn.addEventListener('click', function () {
+    setState('safe');
+    gTitle.textContent = 'You are marked safe';
+    gBody.textContent = 'Responders can now see that you have reached cover. Stay where you are until the all-clear is given.';
+    gReason.textContent = 'Simulated. No location or status data leaves this page.';
+    safeBtn.disabled = true;
+    safeBtn.textContent = 'Marked safe';
+  });
+
+  function closeDialog() {
+    if (typeof dlg.close === 'function') { dlg.close(); } else { dlg.removeAttribute('open'); clearInterval(timer); }
+  }
+  document.getElementById('btn-close').addEventListener('click', closeDialog);
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) closeDialog(); });
+  dlg.addEventListener('close', function () { clearInterval(timer); });
+})();
+</script>
 </body>
 </html>
